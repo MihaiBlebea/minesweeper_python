@@ -1,5 +1,6 @@
 from typing import List, Any
 import random
+from prettytable import PrettyTable
 
 DIRECTIONS = (
     (-1, 1),
@@ -14,10 +15,9 @@ DIRECTIONS = (
 
 
 class SweeperBoard(List):
-
     count_mines: int = 0
 
-    total_mines: int = 2
+    total_mines: int = 0
 
     def __init__(self, x: int, y: int):
         assert x > 3, "X must be greater than 3"
@@ -28,6 +28,19 @@ class SweeperBoard(List):
         super().__init__(
             [self._create_initial_cell() for _ in range(0, x)] for _ in range(0, y)
         )
+
+    def __repr__(self):
+        return self._draw_board()
+
+    def __str__(self):
+        return self._draw_board()
+
+    def _draw_board(self) -> str:
+        table = PrettyTable([" "] + [i for i in range(0, len(self))])
+        for i, row in enumerate(self):
+            table.add_row([i] + row, divider=True)
+
+        return table.get_string()
 
     def _should_be_mine(self) -> bool:
         if self.count_mines >= self.total_mines:
