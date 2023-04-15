@@ -1,23 +1,11 @@
 from typing import List, Any
 import random
 from prettytable import PrettyTable
-
-DIRECTIONS = (
-    (-1, 1),
-    (-1, 0),
-    (-1, -1),
-    (0, 1),
-    (0, -1),
-    (1, 1),
-    (1, 0),
-    (1, -1),
-)
+from src.directions import DIRECTIONS
 
 
 class SweeperBoard(List):
     count_mines: int = 0
-
-    total_mines: int = 0
 
     def __init__(self, x: int, y: int):
         assert x > 3, "X must be greater than 3"
@@ -43,34 +31,26 @@ class SweeperBoard(List):
         return table.get_string()
 
     def _should_be_mine(self) -> bool:
-        if self.count_mines >= self.total_mines:
-            return False
-
-        if random.randint(0, 100) > 50:
+        if random.randint(0, 100) > 70 and self.count_mines < self.total_mines:
             self.count_mines += 1
             return True
 
         return False
 
     def _create_initial_cell(self) -> str:
-        if self._should_be_mine():
-            return "#"
-
-        return "-"
+        return "#" if self._should_be_mine() else "-"
 
     def _count_total_mines_around(self, x: int, y: int) -> int:
         return len(
-            [1 for x_dir, y_dir in DIRECTIONS if self.is_mine(x + x_dir, y + y_dir)]
+            [True for x_dir, y_dir in DIRECTIONS if self.is_mine(x + x_dir, y + y_dir)]
         )
 
     def is_mine(self, x: int, y: int) -> bool:
-        if x < 0 or y < 0:
-            return False
-
-        try:
-            return self[y][x] == "#"
-        except IndexError:
-            return False
+        return (
+            False
+            if x < 0 or y < 0 or y >= len(self) or x >= len(self[y])
+            else self[y][x] == "#"
+        )
 
     def set_cell_content(self, x: int, y: int, content: Any) -> None:
         assert isinstance(x, int), "X must be an integer"
