@@ -80,23 +80,8 @@ class SweeperBoard(List):
 
     def process(self) -> None:
         for y, column in enumerate(self):
-            for x, cell in enumerate(column):
-                if cell == "#":
-                    continue
-
+            [
                 self.set_cell_content(x, y, self._count_total_mines_around(x, y))
-
-
-if __name__ == "__main__":
-    from pprint import pprint
-
-    m = SweeperBoard(4, 4)
-
-    print("Generating a simple mine sweeper table:")
-    pprint(m)
-
-    print("Processig the table...\n")
-    m.process()
-
-    print("Result:")
-    pprint(m, width=50)
+                for x, cell in enumerate(column)
+                if cell != "#"
+            ]
